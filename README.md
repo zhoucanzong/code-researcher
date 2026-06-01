@@ -48,6 +48,7 @@
 | 🔎 证据审计 | 自动标记报告中缺少源码证据支撑的高影响结论 |
 | 📑 证据索引 | 从报告中提取所有源码引用，建立轻量级证据索引 |
 | 🌐 双语输出 | 中英文自动路由，按用户语言输出报告 |
+| 🌐 HTML 展示 | 将 Markdown 报告转换为精美的 HTML 文件，自适应深色/浅色模式 |
 
 | Feature | Description |
 |---------|-------------|
@@ -59,6 +60,7 @@
 | 🔎 Evidence Audit | Flag high-impact claims that lack nearby source evidence |
 | 📑 Evidence Index | Extract all source references from a report into a lightweight index |
 | 🌐 Bilingual Output | Auto-route between Chinese and English based on user language |
+| 🌐 HTML Export | Convert Markdown reports to polished HTML with dark/light mode |
 
 ---
 
@@ -180,6 +182,17 @@ python skills/code-researcher/scripts/build_evidence_index.py report.md \
 ```bash
 python skills/code-researcher/scripts/self_check.py
 ```
+
+### 6. HTML 导出 | HTML Export
+
+报告生成后，模型会询问是否需要 HTML 版本。确认后，模型直接使用 `Write` 工具输出完整的 `.html` 文件。
+
+HTML 设计特点：
+- 独立的内嵌样式 HTML5 文件，不依赖外部资源
+- 暖色陶土主题（`#c45c3e` 强调色），自适应深色/浅色模式
+- 精美排版：标题下划线/左边框装饰、引用块、代码块、表格、Mermaid 图表等
+- 响应式设计，支持移动端
+- 语义化标签（`article`、`header`、`section` 等）
 
 ---
 

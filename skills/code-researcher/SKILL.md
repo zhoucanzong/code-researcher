@@ -224,6 +224,56 @@ Default (research) should answer the practical architecture question:
 - 深度报告默认至少包含一张有用的架构图或运行图，除非项目太小或图会重复文字。
 - 图也要有证据，关键节点和边要能对应源码或文档。
 
+## HTML Presentation / HTML 展示（可选附加操作）
+
+After delivering the report, offer an HTML version:
+
+> "报告已交付。需要导出为精美的 HTML 文件吗？（直接回车=跳过）"
+> "Report delivered. Export as a polished HTML file? (Press Enter to skip)"
+
+If the user confirms (types `y` / `yes` / `html` or similar), use the `Write` tool to output the report content directly as a `.html` file. Do not call an external script — generate the complete HTML yourself.
+
+### HTML Design Spec / HTML 设计规范
+
+Output a self-contained, inline-styled HTML5 file following this design system:
+
+**Color Palette (Warm Terracotta Theme)**
+- Background: `#faf8f5` (light) / `#1c1a18` (dark)
+- Primary text: `#2c2825` (light) / `#e8e2dc` (dark)
+- Accent: `#c45c3e` (terracotta — for heading borders, left borders, links)
+- Secondary text: `#6b6560`
+- Border: `#e8e0d6` (light) / `#3a3632` (dark)
+
+**Typography**
+- Body font: system font stack (`-apple-system, "Segoe UI", "Noto Sans SC", sans-serif`)
+- Code font: monospace stack (`"SF Mono", "Fira Code", "Sarasa Mono SC", monospace`)
+- Body size: 16px, line-height 1.75
+- h1: 2.2rem, bottom border 2px solid accent
+- h2: 1.55rem, left border 4px solid accent, left padding 16px
+- h3: 1.2rem, font-weight 600
+- Container max-width: 820px, centered
+
+**Component Styles**
+- Blockquote: left border 4px accent, `#f7f3ed` background, rounded right corners
+- Code blocks: `#f5f0e8` background, border-radius 12px, padding 20px 24px
+- Inline code: `#f0ebe3` background, accent-colored text
+- Tables: header `#f5f0e8` background, border-radius 8px, row hover highlight
+- Links: accent color, underline on hover
+- Task list checkboxes: use `accent-color` matching the accent
+- Mermaid diagrams: wrap in a centered container with subtle background
+
+**Dark Mode**
+- Use `@media (prefers-color-scheme: dark)` for dark variable overrides
+- Every color variable has a dark counterpart
+
+**Requirements**
+- All CSS inline in a `<style>` tag, no external references
+- Full HTML5 document structure (DOCTYPE, html, head, body)
+- Mobile-responsive (reduce font sizes and padding at `max-width: 640px`)
+- Semantic tags: `<article>`, `<header>`, `<section>`, etc.
+- Convert Markdown content to corresponding HTML tags (`<table>`, `<pre><code>`, `<ul>`/`<ol>`, etc.)
+- Output path: same directory as the report, e.g. `report.md` → `report.html`
+
 ## Minimal Self-Check / 最小自检
 
 Before publishing changes to this skill, run:
