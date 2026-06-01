@@ -1,14 +1,8 @@
 ---
 name: code-researcher
-description: >
-  Bilingual code research and architecture reporting for repositories. Use when
-  the user asks to understand a codebase, map a project, study source code,
-  trace execution, explain architecture, evaluate maintainability, compare
-  repositories, or produce a deep architecture report. Trigger phrases include:
-  code research, source study, repo map, architecture report, runtime trace,
-  maintainer notes, understand this repo, study this library, compare projects,
-  代码研究, 源码分析, 架构报告, 项目地图, 执行路径, 读代码, 学习项目,
-  维护者视角, 对比项目.
+description: Bilingual code research and architecture reporting for repositories.
+argument-hint: <repo> 或 map <repo> 或 trace <repo> [场景] 或 deep <repo> 或 compare <repoA> <repoB>
+allowed-tools: [Read, Write, Edit, Bash, WebSearch, WebFetch]
 ---
 
 # Code Researcher
@@ -18,6 +12,15 @@ it contains, how its main path runs, why its abstractions exist, and how a
 maintainer should work with it.
 
 把陌生代码库转化为一份有证据、有执行路径、有设计判断、也能服务维护者的架构理解。
+
+用户输入：`$ARGUMENTS`
+
+**参数解析规则**：
+- 以 `map` 开头 → 快速项目地图
+- 以 `trace` 开头 → 执行路径追踪
+- 以 `deep` 开头 → 深度架构报告
+- 以 `compare` 开头 → 项目对比
+- 无子命令（默认）→ 标准代码研究报告
 
 ## Language Routing / 语言路由
 
@@ -36,30 +39,16 @@ maintainer should work with it.
 
 ## Commands / 命令
 
-The skill should feel like a small product with clear actions:
+| 用法 | 功能 | 适合场景 |
+|------|------|----------|
+| `/code-researcher <repo>` | 默认代码研究报告 | 多数情况 |
+| `/code-researcher map <repo>` | 快速项目地图 | 快速了解结构 |
+| `/code-researcher trace <repo> [场景]` | 执行路径追踪 | 追踪具体流程 |
+| `/code-researcher deep <repo>` | 深度架构报告 |  serious source study |
+| `/code-researcher compare <repoA> <repoB>` | 项目对比 | 选型对比 |
 
-- `/code-map <repo>`: fast project map, entry candidates, high-signal
-  directories, and a reading route.
-- `/code-trace <repo> [scenario]`: follow one concrete request, CLI command,
-  job, or API from input to output.
-- `/code-research <repo>`: default research report with map, runtime story,
-  design reading, and maintainer notes.
-- `/code-research-deep <repo>`: deeper architecture report for serious source
-  study, including module investigations, tradeoffs, risks, diagrams when useful,
-  and an evidence index.
-- `/code-compare <repoA> <repoB>`: compare architecture, abstractions, maturity,
-  risks, and fit for the user's decision.
-
-中文语义：
-
-- `/code-map <repo>`：项目地图、入口候选、核心目录、阅读路线。
-- `/code-trace <repo> [场景]`：追踪一个真实请求、命令、任务或 API。
-- `/code-research <repo>`：默认代码研究报告。
-- `/code-research-deep <repo>`：深度架构报告。
-- `/code-compare <repoA> <repoB>`：对比两个项目的架构取舍与适用性。
-
-If the user does not use a command, infer the nearest action. Default to
-`/code-research` for broad requests and `/code-map` for quick overview requests.
+If the user does not use a subcommand, infer the nearest action. Default to
+research for broad requests and map for quick overview requests.
 
 ## Default Behavior / 默认行为
 
@@ -77,10 +66,10 @@ If the user does not use a command, infer the nearest action. Default to
   next deep-dive path.
 - Treat generated code, vendored code, fixtures, and examples as secondary unless
   they explain the system's contract.
-- Use the depth implied by the command:
-  - `skim`: `/code-map`
-  - `study`: `/code-research` and `/code-trace`
-  - `deep`: `/code-research-deep` and large comparisons
+- Use the depth implied by the subcommand:
+  - `skim`: `map`
+  - `study`: default (research) and `trace`
+  - `deep`: `deep` and large comparisons
 - For large repositories, do not ask for mode selection unless the user's goal
   would materially change the work. Choose a reasonable depth and name the choice.
 
@@ -142,7 +131,7 @@ Use the four-layer method in `references/research-method.md`:
 
 ## Command Playbooks / 命令交付口径
 
-`/code-map` should be quick and concrete:
+`map` should be quick and concrete:
 
 - What this repo appears to be
 - Languages, package managers, and command surfaces
@@ -150,7 +139,7 @@ Use the four-layer method in `references/research-method.md`:
 - High-signal directories versus low-signal/generated areas
 - Suggested reading route
 
-`/code-trace` should be narrow:
+`trace` should be narrow:
 
 - Scenario chosen or requested
 - Entry point
@@ -158,14 +147,14 @@ Use the four-layer method in `references/research-method.md`:
 - Data/control handoffs
 - Where errors, configuration, or external effects enter
 
-`/code-research` should answer the practical architecture question:
+Default (research) should answer the practical architecture question:
 
 - Codebase Map
 - Runtime Story
 - Design Inquiry
 - Maintainer Notes
 
-`/code-research-deep` should add depth only where it buys understanding:
+`deep` should add depth only where it buys understanding:
 
 - Problem and architecture framing
 - Core responsibility studies
@@ -177,10 +166,10 @@ Use the four-layer method in `references/research-method.md`:
 
 中文交付口径：
 
-- `/code-map`：短、准、能指导下一步阅读。
-- `/code-trace`：只追一条主路径，把入口、交接点、输出或副作用讲清楚。
-- `/code-research`：用四层方法形成完整但不过度膨胀的研究报告。
-- `/code-research-deep`：只在能增加理解的地方加深，避免堆章节。
+- `map`：短、准、能指导下一步阅读。
+- `trace`：只追一条主路径，把入口、交接点、输出或副作用讲清楚。
+- 默认报告：用四层方法形成完整但不过度膨胀的研究报告。
+- `deep`：只在能增加理解的地方加深，避免堆章节。
 
 ## Evidence Bar / 证据标准
 
@@ -206,15 +195,15 @@ Use the four-layer method in `references/research-method.md`:
 
 ## Output Standards / 输出标准
 
-- `/code-map`: concise map, likely entry points, important directories, and an
+- `map`: concise map, likely entry points, important directories, and an
   ordered reading route.
-- `/code-trace`: sourced execution path for one scenario, with boundaries and
+- `trace`: sourced execution path for one scenario, with boundaries and
   side effects called out.
-- `/code-research`: narrative report with code map, runtime story, important
+- default report: narrative report with code map, runtime story, important
   modules, design observations, and maintainer notes.
-- `/code-research-deep`: deep architecture report with diagrams, module analysis,
+- `deep`: deep architecture report with diagrams, module analysis,
   design tradeoffs, risks, and evidence index.
-- `/code-compare`: side-by-side comparison of problem framing, architecture,
+- `compare`: side-by-side comparison of problem framing, architecture,
   abstractions, maturity, risks, and recommendation.
 
 ## Visuals / 配图
@@ -222,7 +211,7 @@ Use the four-layer method in `references/research-method.md`:
 - Use Mermaid as the default visual format.
 - Draw a diagram only when it clarifies runtime flow, module ownership, state,
   dependency direction, plugin/adapter boundaries, or external effects.
-- For `/code-research-deep`, include at least one useful architecture or runtime
+- For `deep`, include at least one useful architecture or runtime
   diagram unless the repository is too small or the diagram would repeat prose.
 - Keep diagrams evidence-backed: each important node or edge should be justified
   by nearby source references.
