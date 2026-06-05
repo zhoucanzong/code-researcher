@@ -2,16 +2,25 @@
 
 # 🗺️ Code Researcher
 
-**代码库研究与架构报告助手 | Codebase Research & Architecture Reporting Assistant**
+**代码库研究与架构报告 | Codebase Research & Architecture Reporting**
 
 输入代码库路径，输出带证据的架构理解。支持项目地图、执行路径追踪、深度架构报告和项目对比。
 
 *Input a repository path, get an evidence-backed architecture understanding. Supports project mapping, execution tracing, deep architecture reports, and project comparison.*
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 
 </div>
+
+> **这是一个 Agent Skill，不是 Python 程序。**
+>
+> 打开你正在用的 agent（Claude Code、Codex、Cursor、OpenClaw、Hermes、CodeBuddy、Workbuddy、Gemini CLI、OpenCode 等），告诉它：
+>
+> ```
+> 帮我安装这个 skill：git@github.com:zhoucanzong/code-researcher.git
+> ```
+>
+> 它会自己帮你 clone 并配置好，不需要 `pip install`。
 
 ---
 
@@ -19,8 +28,7 @@
 
 - [功能特性 | Features](#功能特性--features)
 - [项目结构 | Project Structure](#项目结构--project-structure)
-- [快速开始 | Quick Start](#快速开始--quick-start)
-- [使用说明 | Usage](#使用说明--usage)
+- [使用方式 | Usage](#使用方式--usage)
 - [贡献指南 | Contributing](#贡献指南--contributing)
 - [许可证 | License](#许可证--license)
 
@@ -76,7 +84,7 @@ code-researcher/
         ├── SKILL.md                     # Skill definition & commands
         ├── assets/                      # (reserved for templates and configs)
         ├── references/                  # Methodology references
-        │   ├── claim-audit.md           # Claim audit methodology
+        │   ├── claim-audit.md
         │   ├── deep-architecture-report.md
         │   ├── evidence-quality.md
         │   ├── module-investigation.md
@@ -84,115 +92,68 @@ code-researcher/
         │   ├── reading-coverage.md
         │   ├── report-planning.md
         │   ├── report-style.md
-        │   ├── research-method.md       # Four-layer research method
+        │   ├── research-method.md
         │   ├── runtime-story.md
         │   └── visual-reporting.md
-        └── scripts/                     # CLI tools
-            ├── build_evidence_index.py  # Extract evidence references
-            ├── claim_audit.py           # Audit source-backed claims
-            ├── scan_repo.py             # Scan repository to JSON map
-            ├── self_check.py            # Minimal self-check suite
-            └── summarize_scan.py        # Render human-readable project map
+        └── scripts/                     # CLI tools (agent auto-calls)
+            ├── build_evidence_index.py
+            ├── claim_audit.py
+            ├── scan_repo.py
+            ├── self_check.py
+            └── summarize_scan.py
 ```
 
 ---
 
-## 快速开始 | Quick Start
+## 使用方式 | Usage
 
-### 环境要求 | Requirements
+安装后，直接在 agent 中使用以下命令：
 
-- Python 3.10+
-- 标准库（无需额外依赖）
-
-### 安装 | Installation
-
-```bash
-# 克隆仓库 | Clone the repo
-git clone <repo-url>
-cd code-researcher
-
-# 无需安装依赖 | No dependencies to install
-# 所有脚本仅使用 Python 标准库
+```
+/code-map <repo>                 # 快速项目地图
+/code-trace <repo> [scenario]    # 追踪执行路径
+/code-research <repo>            # 默认架构报告
+/code-research-deep <repo>       # 深度架构报告
+/code-compare <repoA> <repoB>    # 项目对比
 ```
 
-### 第一步：扫描代码库 | Step 1: Scan a Repository
+或者直接用自然语言告诉 agent：
 
-```bash
-python skills/code-researcher/scripts/scan_repo.py ./my-project \
-  --out ./my-project-scan.json
+```
+帮我分析这个代码库的架构
+追踪一下 /api/login 的执行路径
+对比这两个项目的设计有什么不同
 ```
 
-### 第二步：生成项目地图 | Step 2: Generate Project Map
+Agent 会自己调用 `scripts/` 下的工具完成扫描 → 分析 → 报告流程。
 
-```bash
-python skills/code-researcher/scripts/summarize_scan.py \
-  ./my-project-scan.json \
-  --query "分析这个项目" \
-  --out ./my-project-map.md
-```
+HTML 导出：报告生成后，agent 会询问是否需要 HTML 版本，确认后自动输出精美的 HTML 文件（自适应深色/浅色模式）。
 
 ---
 
-## 使用说明 | Usage
+<details>
+<summary>高级：手动脚本 / Advanced: Manual Script Usage</summary>
 
-### 1. 仓库扫描 | Repository Scan
-
-扫描代码库并输出紧凑的 JSON 地图：
-
-```bash
-python skills/code-researcher/scripts/scan_repo.py <repo-path> [--out <json-path>]
-```
-
-输出包含：语言统计、入口候选、核心目录、架构信号、图表建议、阅读路线等。
-
-### 2. 项目地图渲染 | Project Map Rendering
-
-将扫描结果渲染为人类可读的项目地图：
+脚本仅使用 Python 3.10+ 标准库，无外部依赖。
 
 ```bash
-# 英文输出
-python skills/code-researcher/scripts/summarize_scan.py scan.json --lang en
+# 1. 扫描仓库
+python skills/code-researcher/scripts/scan_repo.py ./my-project --out ./scan.json
 
-# 中文输出（自动检测）
-python skills/code-researcher/scripts/summarize_scan.py scan.json --query "分析这个项目"
-```
+# 2. 生成项目地图
+python skills/code-researcher/scripts/summarize_scan.py ./scan.json --lang en
 
-### 3. 结论审计 | Claim Audit
+# 3. 结论审计
+python skills/code-researcher/scripts/claim_audit.py report.md --lang zh --out audit.md
 
-审计 Markdown 报告中的高影响结论是否具备邻近源码证据：
+# 4. 证据索引
+python skills/code-researcher/scripts/build_evidence_index.py report.md --out evidence.json
 
-```bash
-python skills/code-researcher/scripts/claim_audit.py report.md \
-  --lang zh --out audit.md
-```
-
-### 4. 证据索引 | Evidence Index
-
-从报告中提取所有源码引用，建立轻量级证据索引：
-
-```bash
-python skills/code-researcher/scripts/build_evidence_index.py report.md \
-  --out evidence.json
-```
-
-### 5. 自检 | Self-Check
-
-运行最小自检，确认技能的核心功能正常：
-
-```bash
+# 5. 自检
 python skills/code-researcher/scripts/self_check.py
 ```
 
-### 6. HTML 导出 | HTML Export
-
-报告生成后，模型会询问是否需要 HTML 版本。确认后，模型直接使用 `Write` 工具输出完整的 `.html` 文件。
-
-HTML 设计特点：
-- 独立的内嵌样式 HTML5 文件，不依赖外部资源
-- 暖色陶土主题（`#c45c3e` 强调色），自适应深色/浅色模式
-- 精美排版：标题下划线/左边框装饰、引用块、代码块、表格、Mermaid 图表等
-- 响应式设计，支持移动端
-- 语义化标签（`article`、`header`、`section` 等）
+</details>
 
 ---
 
@@ -207,12 +168,6 @@ HTML 设计特点：
 5. 打开一个 Pull Request
 
 Issues and PRs are welcome!
-
-1. Fork the repo
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
 
 ---
 
